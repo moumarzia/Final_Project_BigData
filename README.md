@@ -11,7 +11,13 @@ Second step:removing the lines starting with '#' by the following command in Git
 
 grep -v '^#'
 
-For the rest of the analysis I have used R markdown for this project. Try1_FinalProject.Rmd starts directly from loading the downloaded data from data_streamflow_Neversink.csv file. The output of my project is Try1_FinalProject.pdf file.
+For the rest of the analysis I have used R markdown for this project. Try1_FinalProject.Rmd starts directly from loading the downloaded data from data_streamflow_Neversink.csv file. The output of my project is Try1_FinalProject.pdf file. I have installed the following packages for my analysis.
+
+install.packages("knitr")
+install.packages("gridExtra")
+install.packages("lubridate")
+install.packages("ggplot2")
+install.packages("scales")
 
 
 
