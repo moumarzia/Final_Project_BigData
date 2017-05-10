@@ -1,5 +1,5 @@
 # Final_Project_BigData, Marzia Tamanna
-My final project is developed for the analysis of a dataset, including analysis of hydrological data and a a ~1000 word paper on my analysis (focusing on methods and results). 
+My final project is developed for the analysis of a dataset, including analysis of hydrological data and a ~1000 word paper on my analysis (focusing on methods and results). 
 
 Initially I have used Gitbash for the following two steps.
 First step:Data is downloaded by the following command in Gitbash
