@@ -1,0 +1,228 @@
+---
+title: "Analysis of Hydrological Characteristics of a Watershed"
+author: "Marzia Tamanna"
+date: "May 8, 2017"
+output: pdf_document
+header-includes: \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.width=12, fig.height=12, fig.pos="H", fig.path='Figs/', warning=FALSE, message=FALSE)
+```
+
+## Introduction
+
+Hydrological characteristics are one of the promising scientific tools for assessment and management of water resources in a watershed (Singh et al., 2014). The hydrological data provide information to land managers for better assessment of interactions of development activities within a watershed and its ecosystem (Fact Sheet: ABFC-FS-02a, 2002).Streamflow is one of the basic component of hydrology. It varies with the volume of water, precipitation, surface temperature, and other climatic factors. Streamflow directly reflects climatic variation in a region. Stream systems play a key role in the
+regulation and maintenance of biodiversity. Changes in streams and streamflow are the direct indicators of changes in basin dynamics and land use (nature.nps.gov). 
+
+## Significance 
+
+Streamflow is calculated as Q = V * A, where V is the stream velocity and A is the stream's cross-sectional area. So, streamflow is directly proportional to stream velocity. And the transport of sediment and nutrient is dependent on stream velocity. Also, changes in the shape of the hydrograph, which may be forced by climate,  have the potential to drive increased/decreased mass wasting of lateral boundaries of rivers (Higson, J. L., & Singer, M. B., 2015).When a lot of rain falls in a short period of time, much of the material eroded by runoff is carried into streams and erosion occurs. So, runoff, one of the components of streamflow is an important cause of erosion.
+
+As, hydrology is the driving factor for the transport of sediment and nutrient in a watershed, so our primary approach was to efficiently understand the characteristics of streamflow. Once we better understand the streamflow variation, we would be able to use advanced hydrological modeling tool to better predict the sediment and nutrient load in that stream.
+
+This stydy primarily presents the code and automation (by means of software R) of a series of analysis  of hydrological data (streamflow data) in order to provide information on a particular watershed characteristics for different time scales (daily, monthly, yearly).The results from these analyses will guide us to better anticipate the hydrological aspect of a watershed. 
+
+
+## About the Example Watershed and Data
+Neversink Reservoir is one of several in the Catskill Mountains that supply water to New York City and other communities along its water supply network. The Neversink River is the most acid-sensitive watershed in the Catskill Mountain region, and among the most acid-sensitive watersheds with elevated nitrate in the state. Atmospheric deposition is the major source for this nitrate loading in such a forested watershed like Neversink River Watershed (NRW). Additionally, suspended-sediment concentrations and turbidity levels are also water-quality concerns within the watershed. Accurate simulations of hydrologic processes and water quality parameters at NRW are vital for water resource management and planning. The major land use in the 172.31 square km watershed is forests covering 97.01% of the land area of which deciduous forest covers 68.96 %, evergreen forest covers 22.09% and mixed forest covers 5.96%. Other land uses include pasture (1%), urban (0.69%), hay (0.68%), water (0.32%) and wetland (0.30%). The Neversink River watershed ranges in elevation from 1,522 feet to more than 4,183 feet, and includes the highest peak in the Catskill Mountains, Slide Mountain, as well as 11 of the Catskill High Peaks (mountains greater than 3,500 feet tall).It has a population of less than 1300 people with minimal development or agriculture.
+
+There were 4 water-quality stations in the Neversink River watershed. Among these four stations, Neversink River near Claryville (USGS station number 01435000) is the selected outlet for the download of daily streamflow data (cubic feet per second or cfs) covering a time period of 2012-2016. A time period of 2012-2016 is used as the observation period for streamflow covering a period of wet, dry and moderate precipitation in the state of NY.At this station, the drainage area is approximately 172.5 km. Mean annual precipitation in the watershed ranges from 1220 to 1410 mm.
+
+## Analysis Approach
+
+Since,R is available as a free Software for statistical computing and graphics, R-3.4.0 for Windows (32/64 bit) is chosen as our automation analysis tool.Particularly we used R Markdown for coding and developing our proposal.
+
+```{r streamflow data, echo=FALSE}
+library("knitr")
+library("gridExtra")
+library("lubridate")
+library("ggplot2")
+library("scales")
+streamflow_5Y <- read.csv(file="data_streamflow_Neversink.csv", header=TRUE, sep=",")
+
+only_streamflow_5Y = streamflow_5Y[2:1828 ,3:4]
+```
+
+## Processing of datetime
+With the help of 'lubridate' package, datetime from downloaded streamflow data is made suitable for further analysis. The 'datetime' is separated into individual columns for year, month and day.
+
+
+```{r datetime processing, echo=FALSE}
+only_streamflow_5Y$X105402_00060_00003 <-as.integer(only_streamflow_5Y$X105402_00060_00003)
+only_datetime = streamflow_5Y[2:1828 ,3]
+dateform = mdy(only_datetime)
+only_streamflow_5Y$only_year= year(dateform) 
+only_streamflow_5Y$only_month= month(dateform) 
+only_streamflow_5Y$only_day= day(dateform) 
+only_streamflow_5Y$datetime =dateform
+streamflow_2012 = only_streamflow_5Y[only_streamflow_5Y$only_year == 2012, ]
+streamflow_2013 = only_streamflow_5Y[only_streamflow_5Y$only_year == 2013, ]
+streamflow_2014 = only_streamflow_5Y[only_streamflow_5Y$only_year == 2014, ]
+streamflow_2015 = only_streamflow_5Y[only_streamflow_5Y$only_year == 2015, ]
+streamflow_2016 = only_streamflow_5Y[only_streamflow_5Y$only_year == 2016, ]
+```
+
+
+## Summarizing the Streamflow Data
+Table 1 provides the overview of streamflow data from 2012 to 2016 for Neversink River Watershed. From this summarization we can have an overall idea about the range of maximum, minimum, mean, median and quarterly flow rate passing through a specific outlet of a watershed.For example, here the watershed had maximum flow as 874 cfs in 2015 and minimum flow as 1 cfs in 2012, 2013 and 2015.Also, from 2012 to 2016(a five year time period), 2015 had the maximum mean flow as 403.3 cfs and 2016 had the minimum mean flow as 285.4 cfs.
+
+
+
+```{r summary of streamflow data, echo=FALSE}
+Summary_streamflow_2012 = summary(streamflow_2012[,2])
+Summary_streamflow_2013 = summary(streamflow_2013[,2])
+Summary_streamflow_2014 = summary(streamflow_2014[,2])
+Summary_streamflow_2015 = summary(streamflow_2015[,2])
+Summary_streamflow_2016 = summary(streamflow_2016[,2])
+print(Summary_streamflow_2012)
+print(Summary_streamflow_2013)
+print(Summary_streamflow_2014)
+print(Summary_streamflow_2015)
+print(Summary_streamflow_2016)
+```
+
+
+Table 1: Overview of streamflow data from 2012 to 2016(top to bottom) for Neversink River Watershed
+
+
+## Plotting Yearwise Boxplot
+The box plot or box and whisker diagram is a standardized way of displaying the distribution of data based on the five number summary: minimum, first quartile, median, third quartile, and maximum.So, the information provided by Figure 1 is quite similar to the information provided by Table 1 except the way of presentation of data. Tabular information is much more straightforward to the people than the boxplot. The boxplot is used in order to display the shape of the distribution, its central value, and its variability. In a box,the ends of the box are the upper and lower quartiles, so the box spans the interquartile range. the median is marked by a vertical line inside the box. This middle box actually represents the middle 50% of scores for the dataset.In Figure 1, each box is the representation of one individual year's distribution of streamflow (cfs).
+
+```{r plotting yearly boxplot, echo=FALSE}
+ggplot(data = only_streamflow_5Y, aes(group=only_year,x = only_year, y = X105402_00060_00003)) + 
+  geom_boxplot(colour="blue", size = 1.3, fill="green", width=0.4, alpha=0.3) +
+  ggtitle(" Yearwise streamflow from 2012 to 2016") +
+  xlab("Time (Year)") +
+  ylab("Streamflow (cfs)") +
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=14),
+        title=element_text(size=16,face="bold")) 
+```
+Figure 1: Boxplot of Yearwise streamflow from 2012 to 2016 for Neversink River Watershed
+
+
+## Plotting Hydrograph
+A hydrograph is a graph showing the rate of flow (streamflow) versus time past a specific point in a river, or stream. The streamflow is expressed in cubic feet per second (cfs).A stream hydrograph is basically a combination of contribution from baseflow component and runoff component in a watershed.The baseflow represents the comparatively steady contribution to stream discharge from groundwater return flow, while the runoff represents the additional streamflow contributed by subsurface flow and surface flow.Here, hydrograph is plotted for each year from 2012 to 2016.Each hydrograph is showing the fluctuation (rise and fall) of flow through a particular year (Figure 2). In addition to that, Stream hydrograph increases in stream flow following a rainfall or snowmelt event and the gradual decay in flow after the peaks reflects diminishing supply from groundwater.In Figure 2, it is clearly visible that the number of peaks is maximum throughout the year 2015 than the other years.So, it can be stated that 2015 was the wettest year among the five years (2012-2016).Also, 2016 was the driest year among those five years due to having least number of peaks throughout the year.
+
+
+```{r plotting hydrograph, echo=FALSE}
+p1 <- ggplot(data = streamflow_2012, aes(x=datetime, y=X105402_00060_00003)) +
+  geom_path(colour="blue", size = 1.3) +
+  ggtitle(" (a) Hydrograph for 2012") +
+  xlab("Time (Days)") +
+  ylab("Streamflow (cfs)") +
+   scale_x_date(date_breaks = "1 month", 
+                 labels=date_format("%b"),
+                 limits = as.Date(c('2012-01-01','2012-12-31'))) + 
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=14,face="bold"))
+p2 <- ggplot(data = streamflow_2013, aes(x=datetime, y=X105402_00060_00003)) +
+  geom_path(colour="blue", size = 1.3) +
+  ggtitle(" (b) Hydrograph for 2013") +
+  xlab("Time (Days)") +
+  ylab("Streamflow (cfs)") +
+  scale_x_date(date_breaks = "1 month", 
+                 labels=date_format("%b"),
+                 limits = as.Date(c('2013-01-01','2013-12-31'))) + 
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=14,face="bold"))
+p3 <- ggplot(data = streamflow_2014, aes(x=datetime, y=X105402_00060_00003)) +
+  geom_path(colour="blue", size = 1.3) +
+  ggtitle(" (c) Hydrograph for 2014") +
+  xlab("Time (Days)") +
+  ylab("Streamflow (cfs)") +
+  scale_x_date(date_breaks = "1 month", 
+                 labels=date_format("%b"),
+                 limits = as.Date(c('2014-01-01','2014-12-31'))) + 
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=14,face="bold"))
+p4 <- ggplot(data = streamflow_2015, aes(x=datetime, y=X105402_00060_00003)) +
+  geom_path(colour="blue", size = 1.3) +
+  ggtitle(" (d) Hydrograph for 2015") +
+  xlab("Time (Days)") +
+  ylab("Streamflow (cfs)") +
+  scale_x_date(date_breaks = "1 month", 
+                 labels=date_format("%b"),
+                 limits = as.Date(c('2015-01-01','2015-12-31'))) + 
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=14,face="bold"))
+p5 <- ggplot(data = streamflow_2016, aes(x=datetime, y=X105402_00060_00003)) +
+  geom_path(colour="blue", size = 1.3) +
+  ggtitle(" (e) Hydrograph for 2016") +
+  xlab("Time (Days)") +
+  ylab("Streamflow (cfs)") +
+  scale_x_date(date_breaks = "1 month", 
+                 labels=date_format("%b"),
+                 limits = as.Date(c('2016-01-01','2016-12-31'))) + 
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=14,face="bold"))
+grid.arrange(p1, p2, p3, p4, p5, ncol=1, nrow=5)
+
+```
+
+Figure 2: Hydrograph for a time period of 2012-2016 for Neversink River Watershed
+
+## Plotting Monthwise Boxplot
+
+Figure 3 is showing the boxplot of Monthwise streamflow from 2012 to 2016 for Neversink River Watershed.From this figure, the people can have the information on what is the median flow rate (cfs) for each of the months from a five year time-period (2012-2016) along with the minimum, first quartile,third quartile, and maximum flow rate (cfs).The 'red dots' in the boxplot are the outliers.
+
+```{r plotting monthly boxplot, echo=FALSE}
+ggplot(data = only_streamflow_5Y, aes(group=only_month,x = only_month, y = X105402_00060_00003)) +
+  geom_boxplot(colour="blue", size = 1.3, fill="yellow", width=0.4, alpha=0.3, outlier.colour = "red") +
+  ggtitle(" Monthwise streamflow from 2012 to 2016") +
+  xlab("Time (Month)") +
+  ylab("Streamflow (cfs)") +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=16,face="bold"))
+```
+Figure 3: Boxplot of Monthwise streamflow from 2012 to 2016 for Neversink River Watershed
+
+## Relationship of Modeled Streamflow with Observed Streamflow (An Example)
+
+Figure 4 is showing the relationship of Modeled Streamflow with Observed Streamflow for Neversink Watershed.Here, a simple relationship is fitted to the data by adding geom_smooth layer with geom_point.In this figure, the modeled streamflow data is just made up for the ease of the establishment of a relationship.
+
+```{r model streamflow comparison, echo=FALSE}
+streamflow_5Y_model <- read.csv(file="Model_data_streamflow.csv", header=TRUE, sep=",")
+
+modeled_streamflow = streamflow_5Y_model[2:1828 ,4:5]
+modeled_streamflow$X105402_00060_00003 <-as.integer(modeled_streamflow$X105402_00060_00003)
+modeled_streamflow$X105402_00060_00003_cd <-as.integer(modeled_streamflow$X105402_00060_00003_cd)
+ggplot(data = modeled_streamflow, aes(x = X105402_00060_00003, y = X105402_00060_00003_cd)) +
+  geom_point() + geom_smooth(method="lm") + 
+  scale_x_continuous(name="Observed Streamflow (cfs)") + 
+  scale_y_continuous(name="Modeled Streamflow (cfs)") + 
+  labs(title ="Modeled Streamflow Plotted Against Observed Streamflow") +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=12),
+        title=element_text(size=16,face="bold"))
+
+```
+
+Figure 4: Modeled Streamflow Plotted Against Observed Streamflow (Sample Comparison)
+
+## Modeling of Sediment and Nutrient Load
+
+Once, the modeler would achieve an acceptable relationship between modeled streamflow and observed streamflow, then he/she would be able to use this setteled parameters for the prediction of sediment and nutrient loading.
+
+## Concluding Remarks
+
+The results from the analysis of this study can be summarized as follows:
+
+(1) The summarization of streamflow data from 2012 to 2016 for Neversink River Watershed provide us the idea about the range of maximum, minimum, mean, median and quarterly flow rate for each year passing through the specific outlet.This information helps the engineers to properly design or manage water resources management structures.
+
+(2) The boxplot of yearwise streamflow exhibits the shape of the distribution of daily flow rate for each individual year, its central value, and its variability. For example, in 2015, the maximum flow is 874 cfs, the minimum flow is 1 cfs, 25% of flow data (almost 91 days in that year) fall below 141 cfs, 75% of flow data (almost 274 days in that year) fall below 660 cfs, 50% of flow data (almost 182 days in that year) fall below 404 cfs and 50% of flow data (almost 182 days in that year) fall above 404 cfs - these information clearly proves 2015 as the wettest year among the five years (2012-2016).
+
+(3) Each hydrograph is showing the fluctuation (rise and fall) of flow through a particular year. This kind of graphical presentation guides the designers or decision-makers to efficiently regulate and operate the hydraulic structures in a watershed. In Figure 2, it is clearly visible that the number of peaks is maximum throughout the year 2015 than the other years. Also, relatively constant rise from end of January to end of March is noticeable in 2015 compared to other years.So, it can be stated that 2015 was the wettest year among the five years (2012-2016).Also, 2016 was the driest year among those five years due to having least number of peaks throughout the year.
+
+(4) The boxplot of monthwise streamflow from 2012 to 2016 for Neversink River Watershed can have the information on what is the median flow rate (cfs) for each of the months from a five year time-period (2012-2016) along with the minimum, first quartile,third quartile, and maximum flow rate (cfs).The 'red dots' in the boxplot are the outliers.The rise and fall nature of streamflow is also visible in this boxplot.For example, the flow rate for third quartile i.e., 75% of flow data increases from January to February and almost keep quite high upto April, then huge fall in May and then keep rising upto August, then drops in September-October, then rises in November and then finally drops in December.
+
+(5) The plotting of Modeled Streamflow against Observed Streamflow is the first choice for the modelers to see whether their model paramitarization is well enough for an acceptable result. The value of coefficient of determination from this relationship will indicate the performance caliber of the model.
+
+The examples of historical streamflow analysis (presented here) carry the potential for the better understanding of the hydrological characteristics in a particular watershed. In this study, the five-year time-period is chosen as a sample time-period.The similar approach can be effectively applied for any time-period (e.g.,50 year time-period) and any watershed. The results from this type of historical streamflow analysis aids the dicision-makers to prepare for future management of water resources for a watershed.
