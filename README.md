@@ -1,5 +1,5 @@
 # Final_Project_BigData, Marzia Tamanna
-My final project is developed for the analysis of a dataset, including analysis of hydrological data and a ~1000 word paper on my analysis (focusing on methods and results). 
+My final project is developed for the analysis of a hydrological dataset. 
 
 Initially I have used Gitbash for the following two steps.
 
@@ -23,6 +23,6 @@ install.packages("ggplot2")
 
 install.packages("scales")
 
-
+[Note:Model_data_streamflow.csv file is not actually a model performed data but a made-up data used for the ease of showing an example.The downloaded data is actual and has been used as observed streamflow data]
 
 
